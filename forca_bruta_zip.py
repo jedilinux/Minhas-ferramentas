@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Diego Rodrigues Pereira
 # @Date:   2023-04-03 17:13:20
+
+#Use python forca_bruta_zip.py -f Arquivo.zip -d rockyou.txt --max-attempts 5
 import zipfile
 import threading
 import argparse
