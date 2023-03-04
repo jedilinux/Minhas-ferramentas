@@ -1,4 +1,6 @@
-#Autor: Diego Rodrigues Pereira
+# -*- coding: utf-8 -*-
+# @Autor: Diego Rodrigues Pereira
+# @Data:   2023-04-03 18:20:20
 import sys
 import string
 import time
