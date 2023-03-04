@@ -1,11 +1,10 @@
 import zipfile
 import threading
-import optparse
+import argparse
 import time
 import hashlib
 from tqdm import tqdm
 import concurrent.futures
-import py7zr
 
 MAX_ATTEMPTS = 10
 FOUND = False
@@ -23,34 +22,26 @@ def extractFile(zFile, password):
 
 def main():
     global FOUND
-    parser = optparse.OptionParser('Uso: %prog -f <arquivo_zip> -d <arquivo_dicionário> -t <tipo_de_arquivo> [--max-attempts <tentativas_máximas>]')
-    parser.add_option('-f', dest='zname', type='string', help='especifique o arquivo zip/7z')
-    parser.add_option('-d', dest='dname', type='string', help='especifique o arquivo dicionário')
-    parser.add_option('-t', dest='filetype', type='string', help='especifique o tipo de arquivo, zip ou 7z')
-    parser.add_option('--max-attempts', dest='max_attempts', type='int', help='especifique o número máximo de tentativas de senha (padrão: 10)')
-    parser.add_option('-h', dest='help', action='store_true', help='obtenha ajuda')
-    options, args = parser.parse_args()
-    if options.help:
+    parser = argparse.ArgumentParser(description='Força bruta em arquivos zip e 7z.')
+    parser.add_argument('-f', dest='zname', type=str, help='especifique o arquivo zip ou 7z')
+    parser.add_argument('-d', dest='dname', type=str, help='especifique o arquivo dicionário')
+    parser.add_argument('--max-attempts', dest='max_attempts', type=int, help='especifique o número máximo de tentativas de senha (padrão: 10)')
+    parser.add_argument('-H', dest='help', action='store_true', help='obtenha ajuda')
+    args = parser.parse_args()
+
+    if args.help:
         parser.print_help()
         exit(0)
 
-    if not options.zname or not options.dname or not options.filetype:
+    if not args.zname or not args.dname:
         print(parser.usage)
         exit(0)
 
-    zname = options.zname
-    dname = options.dname
-    filetype = options.filetype.lower()
-    max_attempts = options.max_attempts or MAX_ATTEMPTS
+    zname = args.zname
+    dname = args.dname
+    max_attempts = args.max_attempts or MAX_ATTEMPTS
 
-    if filetype == 'zip':
-        zFile = zipfile.ZipFile(zname)
-    elif filetype == '7z':
-        zFile = py7zr.SevenZipFile(zname, mode='r')
-    else:
-        print("Tipo de arquivo não suportado.")
-        exit(0)
-
+    zFile = zipfile.ZipFile(zname)
     dFile = open(dname, 'r')
 
     passwords = dFile.readlines()
