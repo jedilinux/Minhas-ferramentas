@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# @Author: Diego Rodrigues Pereira
+# @Date:   2023-04-03 17:13:20
 import zipfile
 import threading
 import argparse
