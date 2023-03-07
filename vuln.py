@@ -1,3 +1,5 @@
+#Autor: Diego Rodrigues Pereira
+#Script faz analise da aplicação WEB em busca de vulnerabilidade XSS, Open Redirect e File Inclusion/Path Traversal
 import os
 import re
 from urllib.parse import urlparse
