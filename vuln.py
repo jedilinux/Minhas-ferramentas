@@ -1,4 +1,4 @@
-#Autor: Diego Rodrigues Pereira
+# @Autor: Diego Rodrigues Pereira
 #Script faz analise da aplicação WEB detecta vulnerabilidades de XSS, Open Redirect e File Inclusion/Path Traversal
 import os
 import re
