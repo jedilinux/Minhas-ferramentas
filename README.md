@@ -1,3 +1,3 @@
 # Minhas-ferramentas
 
-Ferramentas criada para time defensivo e ofensivo. 
+Ferramentas existente e algumas criada para time defensivo e ofensivo. 
